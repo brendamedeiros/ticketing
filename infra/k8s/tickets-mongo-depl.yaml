@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-mongo-depl
+spec:
+  replicas: 1
+  selector: # this selector is how the deployment is going to find the pods that actually creates
+    matchLabels:
+      app: tickets-mongo
+  template:
+    metadata:
+      labels: # this is going to be the label that gets applied to the pod
+        app: tickets-mongo
+    spec:
+      containers:
+        - name: tickets-mongo
+          image: mongo # get image for mongo on hub docker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-mongo-srv
+spec:
+  selector: #this selector here is telling the service which pods it's going to get access to
+    app: tickets-mongo
+  ports:
+    - name: db # this name is only for logging purposes
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

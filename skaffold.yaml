@@ -1,0 +1,38 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+# Whenever we build an image, do not try to push off to Docker Hub
+build:
+  # local:
+  #     push: false
+  googleCloudBuild:
+    projectId: ticketing-dev-288815
+  artifacts:
+    - image: us.gcr.io/ticketing-dev-288815/auth
+      # - image: brendamedeiros/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
+    - image: us.gcr.io/ticketing-dev-288815/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
+            dest: .
+    - image: us.gcr.io/ticketing-dev-288815/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
+            dest: .
